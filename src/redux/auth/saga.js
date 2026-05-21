@@ -35,8 +35,11 @@ function* logoutSagaFunction() {
     clearAuthData();
     setAuthorization(null);
     yield put({ type: AuthActionTypes.LOGOUT_USER_SUCCESS, payload: {} });
+    yield put({ type: AuthActionTypes.LOGIN_USER_RESET });
   } catch (error) {
     clearAuthData();
+    setAuthorization(null);
+    yield put({ type: AuthActionTypes.LOGIN_USER_RESET });
     yield put({ type: AuthActionTypes.LOGOUT_USER_FAILURE, payload: error });
   }
 }

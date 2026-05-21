@@ -1,7 +1,16 @@
 import { AuthActionTypes } from "./constants";
 
+const getUserFromStorage = () => {
+  try {
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : null;
+  } catch {
+    return null;
+  }
+};
+
 const initialState = {
-  data: null,
+  data: getUserFromStorage(),
   loading: false,
   error: null,
 };
