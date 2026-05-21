@@ -10,11 +10,10 @@ function* loginSagaFunction({ payload }) {
     const response = yield call(login, payload);
     if (response?.status === 200) {
       const userData = {
-        id: response?.data?.user?.id,
-        username: response?.data?.user?.name,
+        id: response?.data?.user?._id,
+        username: response?.data?.user?.fullName,
         email: response?.data?.user?.email,
-        role: response?.data?.user?.role,
-        token: response?.data?.token,
+        token: response?.data?.user?.token,
       };
       localStorage.setItem("token", userData.token);
       localStorage.setItem("user", JSON.stringify(userData));
@@ -46,7 +45,7 @@ function* signupSagaFunction({ payload }) {
   try {
     yield put({ type: AuthActionTypes.SIGNUP_USER_LOADING });
     const response = yield call(signup, payload);
-    if (response?.status === 200) {
+    if (response?.status === 200 || response?.status === 201) {
       yield put({ type: AuthActionTypes.SIGNUP_USER_SUCCESS, payload: response.data });
     } else {
       yield put({ type: AuthActionTypes.SIGNUP_USER_FAILURE, payload: response?.data?.message || "Signup failed" });
