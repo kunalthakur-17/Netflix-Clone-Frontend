@@ -21,9 +21,16 @@ export default function Header() {
     return (
         <div className="fixed z-10 flex w-full h-16 items-center justify-between px-6 bg-gradient-to-b from-black to-transparent">
             <img className="w-35" src="https://www.logo.wine/a/logo/Netflix/Netflix-Logo.wine.svg" alt="Intflix_Logo" />
+            
             <div className="flex items-center">
-                <IoIosArrowDropdown size="24px" className="text-white"/>
-                <h1 className="text-lg font-medium text-white">{username || "Guest"}</h1>
+                {
+                username && <>
+                     <IoIosArrowDropdown size="24px" className="text-white"/>
+                <h1 className="text-lg font-medium text-white">{username}</h1>
+            
+                </>
+            }
+             
                 
                 <div className="ml-4">
                     <button onClick={handleLogout} className="bg-red-800 text-white px-4 py-2">Logout</button>

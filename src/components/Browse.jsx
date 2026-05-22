@@ -1,11 +1,14 @@
 import Header from "./Header";
+import MainContainer from "./MainContainer";
+import MovieContainer from "./MovieContainer";
 
 export default function Browse() {
   return (
-    <div >
+    <div className="bg-black min-h-screen">
       <Header />
-      <div className="pt-20 px-6">
-        <h1 >This is Browse Page</h1>
+      <MainContainer />
+      <div className="px-6">
+        <MovieContainer />
       </div>
     </div>
   );
