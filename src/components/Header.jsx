@@ -10,6 +10,7 @@ export default function Header() {
 
     const loginReducer = useSelector(store => store.loginReducer);
     const username = loginReducer?.data?.username;
+    const toggle = useSelector(store => store.movieUIReducer?.toggle);
 
     const handleToggle = () => {
         dispatch(setToggleAction());

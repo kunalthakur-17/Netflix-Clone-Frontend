@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import Login from "./Login";
 import Register from "./Register";
 import Browse from "./Browse";
+import MovieDetailPage from "./MovieDetailPage";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -31,6 +32,10 @@ export default function Body() {
     {
       path: "/browse",
       element: <ProtectedRoute><Browse /></ProtectedRoute>,
+    },
+    {
+      path: "/movie/:id",
+      element: <ProtectedRoute><MovieDetailPage /></ProtectedRoute>,
     },
   ]);
 
