@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TMDB_IMG_URL } from '../utils/constant';
+import { TMDB_IMG_URL } from '../constants/endpoint';
 
 const MovieCard = ({ posterPath, movieId }) => {
   const navigate = useNavigate();

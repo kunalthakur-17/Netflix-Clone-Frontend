@@ -1,30 +1,39 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { TMDB_IMG_URL, options } from "../utils/constant";
-
-const TMDB_BASE = "https://api.themoviedb.org/3/movie";
+import { options } from "../utils/constant";
+import { MOVIE_DETAIL_URL, MOVIE_CREDITS_URL, MOVIE_SIMILAR_URL, TMDB_IMG_URL, TMDB_IMG_SMALL } from "../constants/endpoint";
+import { MovieDetailSkeleton } from "./Skeletons";
+import MovieCard from "./MovieCard";
 
 export default function MovieDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
   const [trailer, setTrailer] = useState(null);
+  const [cast, setCast] = useState([]);
+  const [similar, setSimilar] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setMovie(null);
+    setIsPlaying(false);
     const fetchDetails = async () => {
       try {
-        const [detailRes, videoRes] = await Promise.all([
-          axios.get(`${TMDB_BASE}/${id}`, options),
-          axios.get(`${TMDB_BASE}/${id}/videos`, options),
+        const [detailRes, videoRes, creditsRes, similarRes] = await Promise.all([
+          axios.get(`${MOVIE_DETAIL_URL}/${id}`, options),
+          axios.get(`${MOVIE_CREDITS_URL}/${id}/videos`, options),
+          axios.get(`${MOVIE_CREDITS_URL}/${id}/credits`, options),
+          axios.get(`${MOVIE_SIMILAR_URL}/${id}/similar`, options),
         ]);
         setMovie(detailRes.data);
         const trailerVideo =
           videoRes.data.results.find((v) => v.type === "Trailer") ||
           videoRes.data.results[0];
         setTrailer(trailerVideo);
+        setCast(creditsRes.data.cast?.slice(0, 10) || []);
+        setSimilar(similarRes.data.results?.slice(0, 12) || []);
       } catch (err) {
         console.error(err);
       }
@@ -32,35 +41,20 @@ export default function MovieDetailPage() {
     fetchDetails();
   }, [id]);
 
-  if (!movie) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-2xl animate-pulse">Loading...</div>
-      </div>
-    );
-  }
+  if (!movie) return <MovieDetailSkeleton />;
 
   const hours = Math.floor(movie.runtime / 60);
   const mins = movie.runtime % 60;
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-
-      {/* Back Button - inside right panel top */}
-      <button
-        onClick={() => navigate(-1)}
-        className="absolute top-5 left-5 z-50 bg-black/70 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm transition hidden"
-      >
-        ← Back
-      </button>
+    <div className="min-h-screen bg-black text-white">
 
       {/* Main Split Layout */}
       <div className="flex flex-col md:flex-row min-h-screen">
 
-        {/* LEFT HALF — Movie Poster / Trailer on play */}
+        {/* LEFT HALF — Poster / Trailer */}
         <div className="w-full md:w-1/2 relative overflow-hidden bg-black" style={{ minHeight: "100vh" }}>
 
-          {/* Poster Image */}
           {!isPlaying && (
             <img
               src={`${TMDB_IMG_URL}/${movie.poster_path}`}
@@ -70,7 +64,6 @@ export default function MovieDetailPage() {
             />
           )}
 
-          {/* Trailer iframe when playing */}
           {isPlaying && trailer && (
             <>
               <iframe
@@ -82,7 +75,6 @@ export default function MovieDetailPage() {
                 allow="autoplay; fullscreen"
                 allowFullScreen
               />
-              {/* Close button BELOW iframe, outside it */}
               <div className="absolute bottom-0 left-0 right-0 flex justify-center pb-4 z-20 bg-gradient-to-t from-black/80 to-transparent pt-8">
                 <button
                   onClick={() => setIsPlaying(false)}
@@ -94,12 +86,8 @@ export default function MovieDetailPage() {
             </>
           )}
 
-          {/* Dark overlay when not playing */}
-          {!isPlaying && (
-            <div className="absolute inset-0 bg-black/30" />
-          )}
+          {!isPlaying && <div className="absolute inset-0 bg-black/30" />}
 
-          {/* Play Button */}
           {!isPlaying && trailer && (
             <button
               onClick={() => setIsPlaying(true)}
@@ -117,16 +105,18 @@ export default function MovieDetailPage() {
           )}
         </div>
 
-        {/* RIGHT HALF — Movie Details */}
-        <div className="w-full md:w-1/2 bg-zinc-900 flex flex-col justify-center px-10 py-16 overflow-y-auto">
+        {/* RIGHT HALF — Details */}
+        <div className="w-full md:w-1/2 bg-zinc-900 flex flex-col px-10 py-16 overflow-y-auto">
 
-          {/* Title */}
+          {/* Back Button */}
           <button
             onClick={() => navigate(-1)}
             className="mb-6 self-start bg-zinc-700 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm transition"
           >
             ← Back
           </button>
+
+          {/* Title */}
           <h1 className="text-4xl font-bold mb-2">{movie.title}</h1>
 
           {/* Tagline */}
@@ -141,9 +131,7 @@ export default function MovieDetailPage() {
             </span>
             <span className="text-gray-400">{movie.vote_count?.toLocaleString()} votes</span>
             <span className="text-gray-300">{movie.release_date?.split("-")[0]}</span>
-            {movie.runtime > 0 && (
-              <span className="text-gray-300">{hours}h {mins}m</span>
-            )}
+            {movie.runtime > 0 && <span className="text-gray-300">{hours}h {mins}m</span>}
             <span className="border border-gray-500 px-2 py-0.5 rounded text-xs uppercase text-gray-400">
               {movie.original_language}
             </span>
@@ -169,8 +157,8 @@ export default function MovieDetailPage() {
             </div>
           )}
 
-          {/* Status & Release */}
-          <div className="mb-5 flex gap-8">
+          {/* Status / Release / Budget */}
+          <div className="mb-5 flex flex-wrap gap-8">
             {movie.status && (
               <div>
                 <h2 className="text-gray-400 text-xs uppercase tracking-widest mb-1">Status</h2>
@@ -191,9 +179,9 @@ export default function MovieDetailPage() {
             )}
           </div>
 
-          {/* Production Companies */}
+          {/* Production */}
           {movie.production_companies?.length > 0 && (
-            <div className="mb-5">
+            <div className="mb-6">
               <h2 className="text-gray-400 text-xs uppercase tracking-widest mb-2">Production</h2>
               <p className="text-gray-300 text-sm">
                 {movie.production_companies.map((c) => c.name).join(" · ")}
@@ -201,19 +189,58 @@ export default function MovieDetailPage() {
             </div>
           )}
 
-          {/* Watch Trailer Button */}
+          {/* Cast */}
+          {cast.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-gray-400 text-xs uppercase tracking-widest mb-3">Cast</h2>
+              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                {cast.map((person) => (
+                  <div key={person.id} className="flex-shrink-0 w-20 text-center">
+                    {person.profile_path ? (
+                      <img
+                        src={`${TMDB_IMG_SMALL}${person.profile_path}`}
+                        alt={person.name}
+                        className="w-20 h-20 rounded-full object-cover mx-auto mb-1"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-zinc-700 flex items-center justify-center mx-auto mb-1">
+                        <span className="text-2xl">👤</span>
+                      </div>
+                    )}
+                    <p className="text-white text-xs font-semibold leading-tight">{person.name}</p>
+                    <p className="text-gray-400 text-xs leading-tight">{person.character}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Trailer Button */}
           {trailer && (
             <a
               href={`https://www.youtube.com/watch?v=${trailer.key}`}
               target="_blank"
               rel="noreferrer"
-              className="mt-4 inline-flex items-center gap-2 bg-red-700 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold w-fit transition"
+              className="mt-2 inline-flex items-center gap-2 bg-red-700 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold w-fit transition"
             >
               ▶ Watch Trailer on YouTube
             </a>
           )}
         </div>
       </div>
+
+      {/* Similar Movies Section */}
+      {similar.length > 0 && (
+        <div className="bg-zinc-950 px-8 py-10">
+          <h2 className="text-white text-2xl font-bold mb-5">Similar Movies</h2>
+          <div className="flex overflow-x-auto no-scrollbar gap-1 pb-2">
+            {similar.map((m) => (
+              <MovieCard key={m.id} movieId={m.id} posterPath={m.poster_path} />
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
