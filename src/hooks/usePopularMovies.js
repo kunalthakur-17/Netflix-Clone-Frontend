@@ -1,16 +1,11 @@
-import axios from "axios";
-import { Popular_Movie, options } from "../utils/constant";
-import { getPopularMoviesAction } from "../redux/movie/actions";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { getPopularMoviesAction } from "../redux/movie/actions";
 
-const usePopularMovies = async () => {
+const usePopularMovies = () => {
     const dispatch = useDispatch();
-    try {
-        const res = await axios.get(Popular_Movie, options);
-        dispatch(getPopularMoviesAction(res.data.results));
-    } catch (error) {
-        console.log(error);
-    }
-}
-
+    useEffect(() => {
+        dispatch(getPopularMoviesAction());
+    }, []);
+};
 export default usePopularMovies;

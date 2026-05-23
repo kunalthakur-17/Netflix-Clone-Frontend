@@ -9,10 +9,11 @@ import usePopularMovies from '../hooks/usePopularMovies';
 import useTopRatedMovies from '../hooks/useTopRatedMovies';
 import useUpcomingMovies from '../hooks/useUpcomingMovies';
 import SearchMovie from './SearchMovie';
+import MovieDialog from './MovieDialog';
 
 const Browse = () => {
-    const user = useSelector(store => store.app.user);
-    const toggle = useSelector(store => store.movie.toggle);
+    const user = useSelector(store => store.loginReducer?.data);
+    const toggle = useSelector(store => store.movieUIReducer?.toggle);
     const navigate = useNavigate();
 
     // my custom hooks
@@ -29,6 +30,7 @@ const Browse = () => {
     return (
         <div >
             <Header />
+            <MovieDialog />
             <div>
                 {
                     toggle ? <SearchMovie /> : (

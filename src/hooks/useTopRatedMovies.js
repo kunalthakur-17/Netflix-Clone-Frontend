@@ -1,15 +1,11 @@
-import axios from "axios";
-import { getTopRatedMoviesAction } from "../redux/movie/actions";
-import { Top_Rated_Movie, options } from "../utils/constant";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { getTopRatedMoviesAction } from "../redux/movie/actions";
 
-const useTopRatedMovies = async () => {
+const useTopRatedMovies = () => {
     const dispatch = useDispatch();
-    try {
-        const res = await axios.get(Top_Rated_Movie, options);
-        dispatch(getTopRatedMoviesAction(res.data.results));
-    } catch (error) {
-        console.log(error);
-    }
-}
+    useEffect(() => {
+        dispatch(getTopRatedMoviesAction());
+    }, []);
+};
 export default useTopRatedMovies;

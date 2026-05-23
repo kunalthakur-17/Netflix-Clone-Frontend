@@ -2,16 +2,18 @@ import { IoIosArrowDropdown } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../redux/auth/actions";
+import { setToggleAction } from "../redux/movie/actions";
 
 export default function Header() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const store = useSelector((state) => state);
-    const loginReducer = store?.loginReducer;
+    const loginReducer = useSelector(store => store.loginReducer);
     const username = loginReducer?.data?.username;
 
-    console.log(loginReducer,"sjdsddisuid")
+    const handleToggle = () => {
+        dispatch(setToggleAction());
+    };
 
     const handleLogout = () => {
         dispatch(logoutUser());
@@ -34,7 +36,9 @@ export default function Header() {
                 
                 <div className="ml-4">
                     <button onClick={handleLogout} className="bg-red-800 text-white px-4 py-2">Logout</button>
-                    <button className="bg-red-800 text-white px-4 py-2 ml-2">Search Movies</button>
+                    <button onClick={handleToggle} className="bg-red-800 text-white px-4 py-2 ml-2">
+                        {toggle ? "Home" : "Search Movies"}
+                    </button>
                 </div>
             </div>
         </div>

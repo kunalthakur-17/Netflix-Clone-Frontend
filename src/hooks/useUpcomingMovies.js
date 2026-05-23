@@ -1,15 +1,11 @@
-import axios from "axios";
-import { getUpcomingMoviesAction } from "../redux/movie/actions";
-import { Upcoming_Movie, options } from "../utils/constant";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { getUpcomingMoviesAction } from "../redux/movie/actions";
 
-const useUpcomingMovies = async () => {
+const useUpcomingMovies = () => {
     const dispatch = useDispatch();
-    try {
-        const res = await axios.get(Upcoming_Movie, options);
-        dispatch(getUpcomingMoviesAction(res.data.results));
-    } catch (error) {
-        console.log(error);
-    }
-}
+    useEffect(() => {
+        dispatch(getUpcomingMoviesAction());
+    }, []);
+};
 export default useUpcomingMovies;

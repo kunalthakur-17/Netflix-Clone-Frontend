@@ -1,6 +1,6 @@
 import { TMDB_IMG_URL } from '../utils/constant';
 import { useDispatch } from "react-redux";
-import { getId, setOpen } from '../redux/movieSlice';
+import { setIdAction, setOpenAction } from '../redux/movie/actions';
 
 const MovieCard = ({ posterPath,movieId}) => {
   const dispatch = useDispatch();
@@ -10,8 +10,8 @@ const MovieCard = ({ posterPath,movieId}) => {
   
 
   const handleOpen = () => {
-    dispatch(getId(movieId));
-    dispatch(setOpen(true));
+    dispatch(setIdAction(movieId));
+    dispatch(setOpenAction(true));
   }
 
   return (

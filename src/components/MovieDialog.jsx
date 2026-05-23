@@ -1,39 +1,29 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import {useSelector,useDispatch} from "react-redux";
-import { setOpen } from '../redux/movieSlice';
+import { useSelector, useDispatch } from "react-redux";
+import { setOpenAction } from '../redux/movie/actions';
 import VideoBackground from './VideoBackground';
 
-export default function MovieDialog() { 
-  const {open,id} = useSelector(store=>store.movie);
+export default function MovieDialog() {
+  const open = useSelector(store => store.movieUIReducer?.open);
+  const id = useSelector(store => store.movieUIReducer?.id);
   const dispatch = useDispatch();
 
-  const handleClose = () =>{
-    dispatch(setOpen(false));
-  }
- 
+  if (!open) return null;
+
+  const handleClose = () => {
+    dispatch(setOpenAction(false));
+  };
+
   return (
-    <React.Fragment>
-      
-      <Dialog
-        open={open}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description" 
-      >
-       <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <VideoBackground movieId={id} bool = {true}/>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80" onClick={handleClose}>
+      <div className="relative w-[90%] max-w-4xl" onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={handleClose}
+          className="absolute -top-8 right-0 text-white text-2xl font-bold hover:text-red-500"
+        >
+          ✕
+        </button>
+        <VideoBackground movieId={id} bool={true} />
+      </div>
+    </div>
   );
 }

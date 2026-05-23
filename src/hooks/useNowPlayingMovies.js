@@ -1,15 +1,11 @@
-import axios from "axios";
-import { getNowPlayingMoviesAction } from "../redux/movie/actions";
-import { Now_Playing_Movie, options } from "../utils/constant";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { getNowPlayingMoviesAction } from "../redux/movie/actions";
 
-const useNowPlayingMovies = async () => {
+const useNowPlayingMovies = () => {
     const dispatch = useDispatch();
-    try {
-        const res = await axios.get(Now_Playing_Movie, options);
-        dispatch(getNowPlayingMoviesAction(res.data.results));
-    } catch (error) {
-        console.log(error);
-    }
-}
+    useEffect(() => {
+        dispatch(getNowPlayingMoviesAction());
+    }, []);
+};
 export default useNowPlayingMovies;
