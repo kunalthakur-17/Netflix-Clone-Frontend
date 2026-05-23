@@ -1,16 +1,22 @@
+import useMovieById from '../hooks/useMovieById';
+import {useSelector} from "react-redux";
 
-export default function VideoBackGround() {
-  return (
-    <div className="absolute inset-0 -z-10">
-      <iframe
-        className="w-full h-full"
-        src="https://www.youtube.com/embed/4eeoleNpEL8?si=Z2lVV3VfwQkAp2kM&autoplay=1&mute=1&controls=0&loop=1&playlist=4eeoleNpEL8"
-        title="YouTube video player"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerPolicy="strict-origin-when-cross-origin"
-        allowFullScreen
-      />
-    </div>
-  );
+const VideoBackground = ({movieId,bool}) => {
+    const trailerMovie = useSelector(store=>store.movie.trailerMovie);
+    
+    useMovieById(movieId);
+
+    return (
+        <div className='w-[vw] overflow-hidden'>
+            <iframe
+                className={`${bool ? "w-[100%]" : "w-screen aspect-video" } `}
+                src={`https://www.youtube.com/embed/${trailerMovie?.key}?si=HorxQfzFY2_TAO1W&autoplay=1&mute=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allowFullScreen>
+            </iframe>
+        </div>
+    )
 }
+
+export default VideoBackground
